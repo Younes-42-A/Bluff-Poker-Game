@@ -1,105 +1,47 @@
-EN:
 ==================================================
           BLUFF POKER / GAME RULES & CODE ARCHITECTURE
 ==================================================
 
 [1] GAME RULES & OBJECTIVE
 --------------------------------------------------
-- Game Objective: Maintain your chip stack while draining the opponent's chips, or end up with the highest number of remaining chips after 12 rounds.
-- Starting Balance: Each player begins with 100 chips.
-- Round Flow:
-  1. Draw: The Attacker draws two random cards (from 1 to 10) and calculates their actual sum (from 2 to 20).
-  2. Bluff: The Attacker claims a sum (between 2 and 20), which can either match their actual sum or be a lie.
-  3. Defend: The Defender chooses one of the following decisions:
-     - [1] Call Bluff (Direct Challenge): Accuse the attacker of lying and challenge their honesty (without guessing the exact sum):
-       * Attacker lied (Actual Sum != Claimed Sum) -> Defender gains 10 chips, Attacker loses 10 chips.
-       * Attacker was honest (Actual Sum == Claimed Sum) -> Defender loses 10 chips, Attacker gains 10 chips.
-     - [2] Pass (Fold/Believe): Accept the attacker's claim and avoid the risk of a challenge.
-       * Defender automatically loses 10 chips, transferred to the attacker as a reward for a successful bluff.
-     - [3] Raise (High Stakes): Double down on the challenge to raise the stake to 25 chips:
-       * Attacker lied -> Defender gains 25 chips, Attacker loses 25 chips.
-       * Attacker was honest -> Defender loses 25 chips, Attacker gains 25 chips.
-- Game Over Conditions:
-  * Either player's chip count reaches 0 (Immediate bankruptcy and loss).
-  * Completion of 12 rounds (The winner is the player with the most remaining chips).
+- Objective: Maintain your chip stack while draining the opponent's chips, or finish with the most chips after 12 rounds.
+- Starting balance: Each player begins with 100 chips.
+- Round flow:
+  1. Draw: The attacker draws two random cards (from 1 to 10) and calculates their actual sum (from 2 to 20).
+  2. Bluff: The attacker claims a sum between 2 and 20. The claim may match the actual sum or be a lie.
+  3. Defend: The defender chooses one of the following actions:
+     - [1] Call bluff: Challenge the attacker's honesty without guessing the exact sum.
+       * If the attacker lied (actual sum != claimed sum), the defender gains 10 chips and the attacker loses 10 chips.
+       * If the attacker was honest (actual sum == claimed sum), the defender loses 10 chips and the attacker gains 10 chips.
+     - [2] Pass / fold: Accept the claim and avoid challenging it.
+       * The defender loses 10 chips, which are transferred to the attacker.
+     - [3] Raise: Increase the stake to 25 chips.
+       * If the attacker lied, the defender gains 25 chips and the attacker loses 25 chips.
+       * If the attacker was honest, the defender loses 25 chips and the attacker gains 25 chips.
+- Game-over conditions:
+  * Either player's chip count reaches zero.
+  * Twelve rounds are completed; the player with the most remaining chips wins.
 
---------------------------------------------------
 [2] CODE ARCHITECTURE & MODULES
 --------------------------------------------------
-The project is built using Object-Oriented Programming (OOP) concepts and divided into 3 main files:
+The project uses object-oriented programming and is divided into three main game modules:
 
-1. player.py (Class: Player)
+1. player.py (Player class)
    - Represents the human player.
-   - Manages player state: name, chip count (chips), drawn cards (cards), and actual sum (actual_sum).
-   - Contains balance and draw methods: draw_cards(), gain_chips(), lose_chips(), and make_bluff() to generate the player's claim.
+   - Manages the player's name, chip balance, drawn cards, and actual card sum.
+   - Provides draw_cards(), gain_chips(), lose_chips(), and make_bluff() methods.
 
-2. bluff_poker_AI.py (Class: AIPlayer)
-   - Represents the bot / AI opponent.
-   - Includes psychological and statistical decision-making algorithms:
-     * make_defense_decision(): Evaluates the opponent's claim based on sum probability distribution (probability curve) and remaining chip balance.
-     * make_bluff(): Generates calculated claims (feints, strategic bluffs, or revealing the truth) to confuse the human player.
+2. bluff_poker_AI.py (AIPlayer class)
+   - Represents the AI opponent.
+   - make_defense_decision() evaluates the opponent's claim using the probability distribution of card sums and the remaining chip balance.
+   - make_bluff() generates calculated claims, including strategic bluffs and truthful claims.
 
-3. BluffGame.py (Class: BluffGame)
-   - Main Game Loop & Engine.
-   - Manages turn flow and toggles Attacker/Defender roles via (current_player_index).
-   - Contains referee logic to verify truth/lie claims and handle chip penalties/rewards:
-     * play_round(): Manages round execution and turn progression.
-     * resolve_round(): Compares the actual sum with the claim and applies decision outcomes (Call / Pass / Raise).
-     * check_game_over(): Checks game-ending conditions and declares the winner.
-==================================================
+3. BluffGame.py (BluffGame class)
+   - Implements the main game engine and turn flow.
+   - Switches attacker and defender roles using current_player_index.
+   - resolve_round() compares the actual sum with the claim and applies the outcome for Call, Pass, or Raise.
+   - check_game_over() checks the ending conditions and declares the winner.
 
-
-
-
-
-AR:
-==================================================
-          بوكر الخداع (BLUFF POKER) / قواعد اللعبة ومعمارية البرمجية
-==================================================
-
-[1] قواعد اللعبة والهدف منها
+[3] LOSS WARNING
 --------------------------------------------------
-- هدف اللعبة: الحفاظ على رصيد الفيشات الخاص بك مع استنزاف فيشات الخصم، أو إنهاء اللعبة بأكبر عدد من الفيشات المتبقية بعد 12 جولة.
-- الرصيد الابتدائي: يبدأ كل لاعب بـ 100 فيشة (Chips).
-- مسار الجولة:
-  1. السحب (Draw): يسحب المهاجم (Attacker) بطاقتين عشوائيتين (من 1 إلى 10) ويحسب مجموعهم الفعلي (من 2 إلى 20).
-  2. الخداع (Bluff): يعلن المهاجم عن مجموع متوقع (بين 2 و20)، والذي قد يطابق المجموع الفعلي أو يكون كذبة.
-  3. الدفاع (Defend): يختار المدافع (Defender) أحد القرارات التالية:
-     - [1] كشف الخداع (Call Bluff - التحدي المباشر): اتهام المهاجم بالكذب وتحدي مصداقيته (دون تخمين المجموع بالتحديد):
-       * المهاجم كاذب (المجموع الفعلي != المجموع المُعلن) -> يكسب المدافع 10 فيشات، ويخسر المهاجم 10 فيشات.
-       * المهاجم صادق (المجموع الفعلي == المجموع المُعلن) -> يخسر المدافع 10 فيشات، ويكسب المهاجم 10 فيشات.
-     - [2] التمرير (Pass / Fold - التصديق): قبول ادعاء المهاجم وتجنب مخاطرة التحدي.
-       * يخسر المدافع تلقائياً 10 فيشات تنتقل إلى المهاجم كمكافأة على نجاح خداعه.
-     - [3] المزايدة (Raise - رفع الرهان): مضاعفة التحدي لرفع الرهان إلى 25 فيشة:
-       * المهاجم كاذب -> يكسب المدافع 25 فيشة، ويخسر المهاجم 25 فيشة.
-       * المهاجم صادق -> يخسر المدافع 25 فيشة، ويكسب المهاجم 25 فيشة.
-- شروط نهاية اللعبة:
-  * وصول رصيد فيشات أحد اللاعبين إلى 0 (الإفلاس والخسارة المباشرة).
-  * اكتمال 12 جولة (الفائز هو اللاعب الذي يملك أكبر عدد من الفيشات المتبقية).
-
---------------------------------------------------
-[2] معمارية البرمجية والموديولات (Modules)
---------------------------------------------------
-تم بناء المشروع باستخدام مفاهيم البرمجة الكائنية التوجه (OOP)، وهو مقسم إلى 3 ملفات رئيسية:
-
-1. player.py (الكلاس: Player)
-   - يمثل اللاعب البشري.
-   - يدير حالة اللاعب: الاسم (name)، عدد الفيشات (chips)، البطاقات المسحوبة (cards)، والمجموع الفعلي (actual_sum).
-   - يحتوي على دوال الرصيد والسحب: ()draw_cards و ()gain_chips و ()lose_chips، بالإضافة إلى ()make_bluff لتوليد ادعاء اللاعب.
-
-2. bluff_poker_AI.py (الكلاس: AIPlayer)
-   - يمثل البوت / الخصم المدار بالذكاء الاصطناعي.
-   - يتضمن خوارزميات اتخاذ القرار النفسية والإحصائية:
-     * ()make_defense_decision: تقييم ادعاء الخصم بناءً على منحنى توزيع الاحتمالات للمجموع ورصيد الفيشات المتبقي.
-     * ()make_bluff: توليد ادعاءات محسوبة (تمويه، خداع استراتيجي، أو إظهار الحقيقة) لإرباك اللاعب البشري.
-
-3. BluffGame.py (الكلاس: BluffGame)
-   - محرك وحلقة اللعبة الرئيسية (Main Game Loop & Engine).
-   - يدير تدفق الجولات وتبديل أدوار المهاجم/المدافع عبر (current_player_index).
-   - يحتوي على منطق التحكيم للتحقق من صدق/كذب الادعاءات وتطبيق عقوبات ومكافآت الفيشات:
-     * ()play_round: إدارة تنفيذ الجولة وتقدم الأدوار.
-     * ()resolve_round: مقارنة المجموع الفعلي بالادعاء وتطبيق نتائج القرارات (Call / Pass / Raise).
-     * ()check_game_over: التحقق من شروط نهاية اللعبة وإعلان الفائز.
-==================================================
-ملاحظة:
-ملف الواجهة للمستخدم ليس ضمن الشرح لان الشرح يقتصر على تبسيط منطق العبة.
+When the human player loses, the GUI side panel displays a fictional system-wipe warning for dramatic effect. This is purely visual: the game does not execute operating-system commands, delete files, or modify the operating system.

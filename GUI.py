@@ -145,17 +145,18 @@ class MainWindow(QMainWindow):
         warning_layout.setSpacing(14)
 
         self.warning_title = QLabel(
-            "⚠️ LOSS WARNING | تحذير الخسارة", objectName="warningTitle"
+            "⚠️ LOSS WARNING", objectName="warningTitle"
         )
         self.warning_title.setWordWrap(True)
         self.warning_text = QLabel(
-            "قد يظهر بعد خسارتك تهديد خيالي بحذف نظام التشغيل.\n\n"
-            "للمزاح فقط: لا تُنفّذ أوامر للنظام ولا تُمس ملفاتك.",
+            "Lose the game and you'll see a dramatic system-wipe warning.\n\n"
+            "This is only a game effect. No system commands run, and your "
+            "operating system and files are never touched.",
             objectName="warningText",
         )
         self.warning_text.setWordWrap(True)
         self.warning_status = QLabel(
-            "SIMULATED THREAT ONLY | تهديد تمثيلي فقط",
+            "SIMULATED THREAT ONLY",
             objectName="warningStatus",
         )
         self.warning_status.setWordWrap(True)
@@ -341,12 +342,13 @@ class MainWindow(QMainWindow):
             self.call_button.setEnabled(False)
             self.raise_button.setEnabled(False)
             if self.game.winner == self.game.bot.name:
-                self.warning_title.setText("💀 YOU LOST! | خسرت!")
+                self.warning_title.setText("💀 YOU LOST!")
                 self.warning_text.setText(
-                    "كان تهديد حذف النظام مزحة فقط. "
-                    "لم يُشغّل أي أمر ولم يُحذف أو يتغير أي شيء."
+                    "SYSTEM WIPE SEQUENCE: FAKE.\n\n"
+                    "Just kidding! No commands were run, and nothing was "
+                    "changed or deleted."
                 )
-                self.warning_status.setText("SYSTEM SAFE | النظام آمن")
+                self.warning_status.setText("SYSTEM STATUS: SAFE")
         elif is_player_turn_to_attack:
             self.attack_button.setEnabled(True)
             self.pass_button.setEnabled(False)
