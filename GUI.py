@@ -13,6 +13,10 @@ STYLE_SHEET = """
 QMainWindow { background-color: #060103; }
 QFrame#mainContainer { border: 2px solid #FFD700; background-color: #080104; margin: 2px; }
 QFrame#opponentFrame { border: 2px solid #D31238; background-color: #120208; border-radius: 6px; padding: 6px; }
+QFrame#warningPanel { border: 2px solid #D31238; background-color: #18020A; border-radius: 8px; }
+QLabel#warningTitle { color: #FFD700; font-size: 19px; font-weight: bold; }
+QLabel#warningText { color: #EEEEEE; font-size: 14px; }
+QLabel#warningStatus { color: #70DB88; font-size: 13px; font-weight: bold; }
 QLabel#botAvatar { border: 2px solid #FFD700; background-color: #000000; }
 QFrame#playingCard { border: 2px solid #FFD700; background-color: #38040E; border-radius: 10px; }
 QLabel#cardQuestionMark { color: #FFD700; font-size: 36px; font-weight: bold; }
@@ -116,23 +120,51 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Bluff Poker Game")
-        self.setGeometry(100, 100, 850, 620)
+        self.setGeometry(100, 100, 1120, 620)
         self.setStyleSheet(STYLE_SHEET)
 
         self.game = BluffGame() 
 
-        self.setMaximumSize(1000, 750)
+        self.setMaximumSize(1300, 750)
 
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
-        outer_layout = QVBoxLayout(central_widget)
+        outer_layout = QHBoxLayout(central_widget)
         outer_layout.setContentsMargins(5, 5, 5, 5)
 
         main_container = QFrame(objectName="mainContainer")
         main_layout = QVBoxLayout(main_container)
         main_layout.setContentsMargins(15, 15, 15, 15)
         main_layout.setSpacing(12)
-        outer_layout.addWidget(main_container)
+        outer_layout.addWidget(main_container, 1)
+
+        warning_panel = QFrame(objectName="warningPanel")
+        warning_panel.setFixedWidth(235)
+        warning_layout = QVBoxLayout(warning_panel)
+        warning_layout.setContentsMargins(16, 20, 16, 20)
+        warning_layout.setSpacing(14)
+
+        self.warning_title = QLabel(
+            "⚠️ LOSS WARNING | تحذير الخسارة", objectName="warningTitle"
+        )
+        self.warning_title.setWordWrap(True)
+        self.warning_text = QLabel(
+            "قد يظهر بعد خسارتك تهديد خيالي بحذف نظام التشغيل.\n\n"
+            "للمزاح فقط: لا تُنفّذ أوامر للنظام ولا تُمس ملفاتك.",
+            objectName="warningText",
+        )
+        self.warning_text.setWordWrap(True)
+        self.warning_status = QLabel(
+            "SIMULATED THREAT ONLY | تهديد تمثيلي فقط",
+            objectName="warningStatus",
+        )
+        self.warning_status.setWordWrap(True)
+
+        warning_layout.addWidget(self.warning_title)
+        warning_layout.addWidget(self.warning_text)
+        warning_layout.addStretch()
+        warning_layout.addWidget(self.warning_status)
+        outer_layout.addWidget(warning_panel)
 
         opponent_frame = QFrame(objectName="opponentFrame")
         opponent_h_layout = QHBoxLayout(opponent_frame)
@@ -308,6 +340,13 @@ class MainWindow(QMainWindow):
             self.pass_button.setEnabled(False)
             self.call_button.setEnabled(False)
             self.raise_button.setEnabled(False)
+            if self.game.winner == self.game.bot.name:
+                self.warning_title.setText("💀 YOU LOST! | خسرت!")
+                self.warning_text.setText(
+                    "كان تهديد حذف النظام مزحة فقط. "
+                    "لم يُشغّل أي أمر ولم يُحذف أو يتغير أي شيء."
+                )
+                self.warning_status.setText("SYSTEM SAFE | النظام آمن")
         elif is_player_turn_to_attack:
             self.attack_button.setEnabled(True)
             self.pass_button.setEnabled(False)
